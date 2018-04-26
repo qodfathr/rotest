@@ -66,7 +66,7 @@ System.setProperty("vertx.disableDnsResolver", "true");
       WebClient client = WebClient.create(vertx);
       
       client
-        .get(443,"api.github.com.", "/users/ccamel")
+        .get(443,"api.github.com", "/users/qodfathr")
         //.postAbs("https://api.github.com/users/qodfathr")
         //.postAbs("https://api.github.com/users/ccamel")
         .ssl(true)
@@ -75,7 +75,7 @@ System.setProperty("vertx.disableDnsResolver", "true");
                 HttpResponse<Buffer> response = ar.result();
                 rc.response().end(response.bodyAsString());
             } else {
-                rc.response().end(ar.cause().getMessage());
+                rc.response().end("FAIL: " + ar.cause().getMessage());
             }
         });
 //    final HttpClient httpClient = vertx.createHttpClient();
