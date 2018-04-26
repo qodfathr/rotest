@@ -3,13 +3,20 @@ package io.openshift.booster;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.RequestOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.healthchecks.HealthCheckHandler;
 import io.vertx.ext.healthchecks.Status;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.StaticHandler;
-
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.auth.User;
+import io.vertx.ext.auth.oauth2.OAuth2Auth;
+import io.vertx.ext.auth.oauth2.providers.TwitterAuth;
+import io.vertx.ext.web.client.*;
+import io.vertx.core.buffer.Buffer;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 public class HttpApplication extends AbstractVerticle {
@@ -29,6 +36,7 @@ public class HttpApplication extends AbstractVerticle {
     router.get("/api/stop").handler(this::stopTheService);
     router.get("/api/health/readiness").handler(rc -> rc.response().end("OK"));
     router.get("/api/health/liveness").handler(healthCheckHandler);
+    router.get("/api/foo").handler(this::foo);
     router.get("/").handler(StaticHandler.create());
 
     vertx
@@ -44,6 +52,35 @@ public class HttpApplication extends AbstractVerticle {
   private void stopTheService(RoutingContext rc) {
     rc.response().end("Stopping HTTP server, Bye bye world !");
     online = false;
+  }
+  
+  private void foo(RoutingContext rc) {
+      WebClient client = WebClient.create(vertx);
+      
+      client
+        //.get(443,"api.github.com.", "/users/qodfathr")
+        //.postAbs("https://api.github.com/users/qodfathr")
+        .postAbs("https://api.github.com/users/qodfathr")
+        //.ssl(true)
+        .send(ar -> {
+            if (ar.succeeded()) {
+                HttpResponse<Buffer> response = ar.result();
+                rc.response().end(response.bodyAsString());
+            } else {
+                rc.response().end(ar.cause().getMessage());
+            }
+        });
+//    final HttpClient httpClient = vertx.createHttpClient();
+//    final String url = "https://api.github.com/users/qodfathr";
+//    httpClient.get(url, response -> {
+//        if (response.statusCode() != 200) {
+//            System.err.println("fail");
+//        } else {
+//            rc.response().end(response.bodyHandler(b -> System.out.println(b.toString())).toString());
+//        }
+//    }).end();
+//    OAuth2Auth oauth2 = TwitterAuth.create(vertx, "clientID", "clientSECRET");
+//oauth2.
   }
 
   private void greeting(RoutingContext rc) {
