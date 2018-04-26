@@ -6,12 +6,14 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.RequestOptions;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.spi.resolver.ResolverProvider;
 import io.vertx.ext.healthchecks.HealthCheckHandler;
 import io.vertx.ext.healthchecks.Status;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.impl.AddressResolver;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.auth.oauth2.OAuth2Auth;
 import io.vertx.ext.auth.oauth2.providers.TwitterAuth;
@@ -27,7 +29,12 @@ public class HttpApplication extends AbstractVerticle {
 
   @Override
   public void start(Future<Void> future) {
+      //System.setProperty("vertx.disableDnsResolver", "true");
+      
+ //     AddressResolver adr = new AddressResolver(vertx, 
+
     Router router = Router.router(vertx);
+    
 
     HealthCheckHandler healthCheckHandler = HealthCheckHandler.create(vertx)
         .register("server-online", fut -> fut.complete(online ? Status.OK() : Status.KO()));
@@ -55,6 +62,7 @@ public class HttpApplication extends AbstractVerticle {
   }
   
   private void foo(RoutingContext rc) {
+System.setProperty("vertx.disableDnsResolver", "true");
       WebClient client = WebClient.create(vertx);
       
       client
