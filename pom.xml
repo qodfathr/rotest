@@ -6,8 +6,8 @@
     <version>20</version>
   </parent>
 
-  <groupId>com.stufftoddknows.rotest</groupId>
-  <artifactId>rotest</artifactId>
+  <groupId>io.vertex.booster</groupId>
+  <artifactId>booster</artifactId>
 
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
@@ -94,7 +94,19 @@
         </exclusion>
       </exclusions>
     </dependency>
+    
+    <dependency>
+        <groupId>com.google.oauth-client</groupId>
+        <artifactId>google-oauth-client</artifactId>
+        <version>1.23.0</version>
+    </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-auth-oauth2</artifactId>
+        <version>3.5.1</version>
+    </dependency>
   </dependencies>
+  
 
   <build>
     <plugins>
