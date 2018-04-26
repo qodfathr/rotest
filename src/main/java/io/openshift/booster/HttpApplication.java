@@ -66,10 +66,10 @@ System.setProperty("vertx.disableDnsResolver", "true");
       WebClient client = WebClient.create(vertx);
       
       client
-        //.get(443,"api.github.com.", "/users/qodfathr")
+        .get(443,"api.github.com.", "/users/ccamel")
         //.postAbs("https://api.github.com/users/qodfathr")
-        .postAbs("https://api.github.com/users/qodfathr")
-        //.ssl(true)
+        //.postAbs("https://api.github.com/users/ccamel")
+        .ssl(true)
         .send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
