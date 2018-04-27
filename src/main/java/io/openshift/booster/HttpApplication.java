@@ -20,6 +20,7 @@ import io.vertx.ext.auth.oauth2.providers.TwitterAuth;
 import io.vertx.ext.web.client.*;
 import io.vertx.core.buffer.Buffer;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
+import io.vertx.core.json.JsonArray;
 
 public class HttpApplication extends AbstractVerticle {
 
@@ -44,6 +45,7 @@ public class HttpApplication extends AbstractVerticle {
     router.get("/api/health/readiness").handler(rc -> rc.response().end("OK"));
     router.get("/api/health/liveness").handler(healthCheckHandler);
     router.get("/api/foo").handler(this::foo);
+    router.get("/api/bar").handler(this::bar);
     router.get("/").handler(StaticHandler.create());
 
     vertx
@@ -62,18 +64,17 @@ public class HttpApplication extends AbstractVerticle {
   }
   
   private void foo(RoutingContext rc) {
-System.setProperty("vertx.disableDnsResolver", "true");
+//System.setProperty("vertx.disableDnsResolver", "true");
       WebClient client = WebClient.create(vertx);
       
       client
         .get(443,"api.github.com", "/users/qodfathr")
-        //.postAbs("https://api.github.com/users/qodfathr")
-        //.postAbs("https://api.github.com/users/ccamel")
         .ssl(true)
         .send(ar -> {
             if (ar.succeeded()) {
                 HttpResponse<Buffer> response = ar.result();
-                rc.response().end(response.bodyAsString());
+                JsonObject gitHubUser = new JsonObject(response.bodyAsString());
+                rc.response().end(gitHubUser.getString("avatar_url"));
             } else {
                 rc.response().end("FAIL: " + ar.cause().getMessage());
             }
@@ -90,6 +91,35 @@ System.setProperty("vertx.disableDnsResolver", "true");
 //    OAuth2Auth oauth2 = TwitterAuth.create(vertx, "clientID", "clientSECRET");
 //oauth2.
   }
+
+  private void bar(RoutingContext rc) {
+//      WebClientOptions wco = new WebClientOptions()
+  //      .setConnectTimeout(0)
+      WebClient client = WebClient.create(vertx);
+      
+      client
+        .post(443,"ussouthcentral.services.azureml.net", "/workspaces/9dbf016f411f4388b7a574524b137656/services/954b60a6ae1c4903a9751a2a17ff988f/execute")
+        .putHeader("Content-Type", "application/json")
+        .addQueryParam("api-version", "2.0")
+        .addQueryParam("format", "swagger")
+        .ssl(true)
+        .sendJsonObject(new JsonObject("{\"Inputs\": {\"input1\": [{\"sentiment_label\":\"2\",\"tweet_text\":\"have a nice day\"}]},\"GlobalParameters\": {}}")
+            , ar -> {
+                if (ar.succeeded()) {
+                    HttpResponse<Buffer> response = ar.result();
+                    //rc.response().end(response.bodyAsString());
+                    JsonObject sentimentResult = new JsonObject(response.bodyAsString());
+                    JsonObject xyz = sentimentResult.getJsonObject("Results");
+                    JsonArray xyz2 = xyz.getJsonArray("output1");// .getJsonObject("output1");
+                    JsonObject xyz3 = xyz2.getJsonObject(0);
+                    rc.response().end(xyz3.getString("Sentiment") + " : " + xyz3.getString("Score"));
+                    //rc.response().end(gitHubUser.getString("avatar_url"));
+                } else {
+                    rc.response().end("FAIL: " + ar.cause().getMessage());
+            }
+        });
+  }
+
 
   private void greeting(RoutingContext rc) {
     if (!online) {
