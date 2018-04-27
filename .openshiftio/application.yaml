@@ -165,13 +165,6 @@ objects:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          - name: SENTIMENT_APIKEY
-            valueFrom:
-              secretKeyRef:
-                key: apikey
-                name: sentiment-api-key
-          - name: JAVA_OPTIONS
-            value: '-Dvertx.cacheDirBase=/tmp -Dvertx.runArgs="-Dvertx.disableDnsResolver=true"'
           image: health-check-vertx:20
           imagePullPolicy: IfNotPresent
           livenessProbe:
