@@ -46,6 +46,7 @@ public class HttpApplication extends AbstractVerticle {
     router.get("/api/health/liveness").handler(healthCheckHandler);
     router.get("/api/foo").handler(this::foo);
     router.get("/api/bar").handler(this::bar);
+        router.get("/api/foobar").handler(this::foobar);
     router.get("/").handler(StaticHandler.create());
 
     vertx
@@ -100,6 +101,7 @@ public class HttpApplication extends AbstractVerticle {
       client
         .post(443,"ussouthcentral.services.azureml.net", "/workspaces/9dbf016f411f4388b7a574524b137656/services/954b60a6ae1c4903a9751a2a17ff988f/execute")
         .putHeader("Content-Type", "application/json")
+        .putHeader("Authorization", "Bearer "+System.getenv("SENTIMENT_APIKEY"))
         .addQueryParam("api-version", "2.0")
         .addQueryParam("format", "swagger")
         .ssl(true)
@@ -120,6 +122,9 @@ public class HttpApplication extends AbstractVerticle {
         });
   }
 
+  private void foobar(RoutingContext rc) {
+      rc.response().end("foobar");
+  }
 
   private void greeting(RoutingContext rc) {
     if (!online) {
