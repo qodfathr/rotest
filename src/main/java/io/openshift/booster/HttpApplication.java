@@ -30,10 +30,6 @@ public class HttpApplication extends AbstractVerticle {
 
   @Override
   public void start(Future<Void> future) {
-      //System.setProperty("vertx.disableDnsResolver", "true");
-      
- //     AddressResolver adr = new AddressResolver(vertx, 
-
     Router router = Router.router(vertx);
     
 
@@ -65,7 +61,6 @@ public class HttpApplication extends AbstractVerticle {
   }
   
   private void foo(RoutingContext rc) {
-//System.setProperty("vertx.disableDnsResolver", "true");
       WebClient client = WebClient.create(vertx);
       
       client
@@ -94,8 +89,6 @@ public class HttpApplication extends AbstractVerticle {
   }
 
   private void bar(RoutingContext rc) {
-//      WebClientOptions wco = new WebClientOptions()
-  //      .setConnectTimeout(0)
       WebClient client = WebClient.create(vertx);
       
       client
